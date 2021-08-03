@@ -1,7 +1,11 @@
 import { Component, OnInit } from '@angular/core';
-// import { Query } from 'apollo-angular';
-// import gql from 'graphql-tag';
-// import { BooksType, AuthorsType } from '../types'
+import { Apollo } from 'apollo-angular';
+import gql from 'graphql-tag';
+import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators'
+import { BookService } from './book.service';
+import { BooksType, AuthorsType, Query } from './../types'
+import { BookQueryService } from './book-query.service';
 
 @Component({
   selector: 'app-books',
@@ -10,24 +14,35 @@ import { Component, OnInit } from '@angular/core';
 })
 export class BooksComponent implements OnInit {
 
-  // books: BooksType[];
+  books: BooksType[];
+  // books: Observable<BooksType[]>;
 
-  constructor() {
-    // private Query: Query
+  constructor(private apollo: Apollo, private bookServ: BookService,
+    private bookQuery: BookQueryService) {
   }
 
   ngOnInit() {
-    //   this.Query.watch({
-    //     query: gql`
-    //     query books {
-    //       id
-    //       name
-    //       authorId
+    //  First Method
+    this.bookQuery.watch().valueChanges.subscribe(res => this.books = res.data.books)
+
+
+    // Second Method
+    // this.apollo.watchQuery<Query>({
+    //   query: gql`
+    //     query {
+    //       books{
+    //       id,
+    //       name,
+    //       author {
+    //         name
+    //       }
     //     }
+    //   }
     //     `
-    //   }).valueChanges.subscribe(res => {
-    //     console.log(res.data)
-    //   })
+    // }).valueChanges
+    //   .subscribe(res => this.books = res.data.books)
+    // .pipe(map(res => res.data.books))
+
   }
 
 }
